@@ -1,0 +1,40 @@
+name: Regen changelogs
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+env:
+  BRANCH: "sixteen-qpr2"
+  START_DATE: "2026-02-01"
+
+jobs:
+  regen-changelogs:
+    runs-on: ubuntu-slim
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+
+      - name: Get Date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Install python dependencies
+        run: pip install gql[all] requests
+
+      - name: Regen changelogs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python .github/scripts/main.py
+
+      - name: Commit to repo
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          commit_message: Regen changelogs as per ${{ steps.date.outputs.date }}
+          file_pattern: "changelogs"
