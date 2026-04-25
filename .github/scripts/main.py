@@ -163,7 +163,7 @@ description: Find all the changes happened across the repositories of PixelOS-AO
 toc: false
 footer: false
 ---
-
-# Changelogs\n"""
+\n
+"""
     )
     f.write(output)
